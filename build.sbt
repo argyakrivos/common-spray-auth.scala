@@ -26,7 +26,7 @@ libraryDependencies ++= {
     "org.json4s"          %%  "json4s-ext"      % json4sV,
     "com.typesafe.akka"   %%  "akka-actor"      % akkaV,
     "com.typesafe.akka"   %%  "akka-testkit"    % akkaV   % "test",
-    "org.scalatest"       %%  "scalatest"       % "1.9.1" % "test",
+    "org.scalatest"       %%  "scalatest"       % "2.1.4" % "test",
     "junit"               %   "junit"           % "4.11" % "test",
     "com.novocode"        %   "junit-interface" % "0.10" % "test",
     "com.blinkboxbooks.platform.security" % "blinkbox-security-jwt" % "1.0.9"
