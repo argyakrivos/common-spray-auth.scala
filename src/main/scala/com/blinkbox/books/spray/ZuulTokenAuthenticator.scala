@@ -14,10 +14,7 @@ import spray.util._
 
 class ZuulTokenAuthenticator(deserializer: TokenDeserializer, elevationChecker: TokenElevationChecker, val elevation: Elevation = Critical)(implicit val executionContext: ExecutionContext)
   extends ContextAuthenticator[User] {
-
-  private val credentialsMissingHeaders = `WWW-Authenticate`(new ZuulHttpChallenge) :: Nil
-  private val credentialsInvalidHeaders = `WWW-Authenticate`(new ZuulHttpChallenge(params = Map("error" -> "invalid_token", "error_description" -> "The access token is invalid"))) :: Nil
-  private val insufficientElevationHeaders = `WWW-Authenticate`(new ZuulHttpChallenge(params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "You need to re-verify your identity"))) :: Nil
+  import ZuulTokenAuthenticator._
 
   def withElevation(e: Elevation) = new ZuulTokenAuthenticator(deserializer, elevationChecker, e)
 
@@ -37,6 +34,13 @@ class ZuulTokenAuthenticator(deserializer: TokenDeserializer, elevationChecker: 
       case _: TokenException => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
     }
 }
+
+object ZuulTokenAuthenticator {
+  private[spray] val credentialsMissingHeaders = `WWW-Authenticate`(new ZuulHttpChallenge) :: Nil
+  private[spray] val credentialsInvalidHeaders = `WWW-Authenticate`(new ZuulHttpChallenge(params = Map("error" -> "invalid_token", "error_description" -> "The access token is invalid"))) :: Nil
+  private[spray] val insufficientElevationHeaders = `WWW-Authenticate`(new ZuulHttpChallenge(params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "You need to re-verify your identity"))) :: Nil
+}
+
 
 private class ZuulHttpChallenge(params: Map[String, String] = Map.empty) extends HttpChallenge(scheme = "Bearer", realm = "", params) {
   override def render[R <: Rendering](r: R): r.type = {
