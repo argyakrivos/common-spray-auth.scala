@@ -10,8 +10,8 @@ import java.nio.file.{Paths, Files}
 import scala.collection.concurrent.TrieMap
 
 class ZuulTokenDecoder(val keysFolder: String) extends TokenDecoder {
-  val privateKeys = new TrieMap[String, Array[Byte]]()
-  val publicKeys = new TrieMap[String, Array[Byte]]()
+  private val privateKeys = new TrieMap[String, Array[Byte]]()
+  private val publicKeys = new TrieMap[String, Array[Byte]]()
 
   override def getDecrypter(header: java.util.Map[String, AnyRef]): EncryptionMethod =
     if (header.get("enc") == A128GCM.NAME && header.get("alg") == RSA_OAEP.NAME) {
@@ -46,9 +46,13 @@ class ZuulTokenDecoder(val keysFolder: String) extends TokenDecoder {
   }
 
   private def getKeyData(keyId: String, name: String, cache: TrieMap[String, Array[Byte]]): Array[Byte] =
-    cache.getOrElseUpdate(keyId, {
+    // not using getOrElseUpdate as this is inherited from MapLike and isn't thread-safe
+    // see this bug report for more info: https://issues.scala-lang.org/browse/SI-7943
+    // also note that this method may read the file more than once, but that's alright
+    cache.get(keyId).getOrElse({
       try {
-        Files.readAllBytes(Paths.get(keysFolder, keyId, name))
+        val keyData = Files.readAllBytes(Paths.get(keysFolder, keyId, name))
+        cache.putIfAbsent(keyId, keyData).getOrElse(keyData)
       } catch {
         case e: IOException => throw new InvalidTokenException(s"Invalid key identifier '$keyId'.")
       }

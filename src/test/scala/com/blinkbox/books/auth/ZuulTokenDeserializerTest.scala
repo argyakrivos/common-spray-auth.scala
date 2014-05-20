@@ -48,6 +48,20 @@ class ZuulTokenDeserializerTest extends FunSuite with ScalaFutures with AsyncAss
     intercept[InvalidClaimException] { w.await() }
   }
 
+  test("A token with a long integer identifier in the subject claim is invalid") {
+    val w = new Waiter
+    val token = testToken("sub" -> "urn:blinkbox:zuul:user:9876543210")
+    deserializer(token) recover { case e => w(throw e) } onComplete { _ => w.dismiss() }
+    intercept[InvalidClaimException] { w.await() }
+  }
+
+  test("A token with a long integer identifier in the client claim is invalid") {
+    val w = new Waiter
+    val token = testToken("sub" -> "urn:blinkbox:zuul:user:284", "bb/cid" -> "urn:blinkbox:zuul:client:9876543210")
+    deserializer(token) recover { case e => w(throw e) } onComplete { _ => w.dismiss() }
+    intercept[InvalidClaimException] { w.await() }
+  }
+
   test("A token with a non-JSON payload is invalid") {
     val w = new Waiter
     val token = testToken("just a plain old string")
