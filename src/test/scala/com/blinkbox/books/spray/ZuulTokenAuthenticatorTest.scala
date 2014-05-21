@@ -5,9 +5,8 @@ import com.blinkbox.books.auth.Elevation._
 import com.blinkbox.security.jwt.TokenException
 import java.security.InvalidKeyException
 import org.junit.runner.RunWith
-import org.scalatest.FunSuite
+import org.scalatest.{FunSuite, Matchers}
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers
 import scala.concurrent.{ExecutionContext, Future}
 import spray.can.Http.RequestTimeoutException
 import spray.http.HttpChallenge
@@ -29,7 +28,7 @@ trait AuthenticatedService extends HttpService {
 }
 
 @RunWith(classOf[JUnitRunner])
-class ZuulTokenAuthenticatorTest extends FunSuite with ScalatestRouteTest with ShouldMatchers with AuthenticatedService {
+class ZuulTokenAuthenticatorTest extends FunSuite with ScalatestRouteTest with Matchers with AuthenticatedService {
   override implicit val actorRefFactory = system
   override implicit val executionContext = actorRefFactory.dispatcher
 

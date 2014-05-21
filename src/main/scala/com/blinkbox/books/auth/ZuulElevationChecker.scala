@@ -33,7 +33,5 @@ class ZuulElevationChecker(sessionUri: String)(implicit val actorRefFactory: Act
       ~> unmarshal[ZuulSession]
     )
 
-  // TODO: Need to make this URL configurable
-  def apply(token: String): Future[Elevation] =
-    pipeline(token)(Get(sessionUri)).map(_.tokenElevation)
+  def apply(token: String): Future[Elevation] = pipeline(token)(Get(sessionUri)).map(_.tokenElevation)
 }
