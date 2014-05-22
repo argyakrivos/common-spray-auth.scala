@@ -22,7 +22,7 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-json"      % "1.2.6",
     "io.spray"            %   "spray-client"    % sprayV,
     "io.spray"            %   "spray-testkit"   % sprayV  % "test",
-    "org.json4s"          %%  "json4s-native"   % json4sV,
+    "org.json4s"          %%  "json4s-jackson"  % json4sV,
     "org.json4s"          %%  "json4s-ext"      % json4sV,
     "com.typesafe.akka"   %%  "akka-actor"      % akkaV,
     "com.typesafe.akka"   %%  "akka-testkit"    % akkaV   % "test",
