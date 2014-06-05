@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.1 ([#6](https://git.mobcastdev.com/Platform/common-spray-auth/pull/6) 2014-06-05 13:11:11)
+
+Tiny change to force rebuild, should be published to Artifactory
+
+Patch to force version update and rebuild.
+
 ## 0.3.0 ([#4](https://git.mobcastdev.com/Platform/common-spray-auth/pull/4) 2014-05-22 18:13:04)
 
 Json4s now uses Jackson rather than Native
