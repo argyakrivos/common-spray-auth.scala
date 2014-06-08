@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.2 ([#7](https://git.mobcastdev.com/Platform/common-spray-auth/pull/7) 2014-06-08 14:55:53)
+
+Tiny patch change to force build
+
+Tiny patch change to force build
+
 ## 0.3.1 ([#6](https://git.mobcastdev.com/Platform/common-spray-auth/pull/6) 2014-06-05 13:11:11)
 
 Tiny change to force rebuild, should be published to Artifactory
