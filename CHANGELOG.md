@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.3 ([#8](https://git.mobcastdev.com/Platform/common-spray-auth/pull/8) 2014-06-09 09:56:24)
+
+Updated dependencies
+
+- Patch change to the latest versions of dependencies
+
 ## 0.3.2 ([#7](https://git.mobcastdev.com/Platform/common-spray-auth/pull/7) 2014-06-08 14:55:53)
 
 Tiny patch change to force build
