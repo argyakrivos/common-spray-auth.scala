@@ -30,5 +30,8 @@ libraryDependencies ++= {
     "junit"               %   "junit"           % "4.11"  % "test",
     "com.novocode"        %   "junit-interface" % "0.10"  % "test",
     "com.blinkboxbooks.platform.security" % "blinkbox-security-jwt" % "1.0.13"
+      exclude("org.slf4j", "com.springsource.slf4j.org.apache.commons.logging")
+      exclude("org.slf4j", "com.springsource.slf4j.log4j")
+      exclude("org.slf4j", "com.springsource.slf4j.api")
   )
 }
