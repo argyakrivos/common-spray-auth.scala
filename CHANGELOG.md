@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.3.4 ([#9](https://git.mobcastdev.com/Platform/common-spray-auth/pull/9) 2014-06-12 10:38:20)
+
+Excluded unnecessary dependencies
+
+The blinkbox-security-jwt dependency drags in some slf4j dependencies
+even though it doesn’t actually use them. This patch excludes them from
+being imported into this project as they can conflict with other slf4j
+implementations such as logback.
+
 ## 0.3.3 ([#8](https://git.mobcastdev.com/Platform/common-spray-auth/pull/8) 2014-06-09 09:56:24)
 
 Updated dependencies
