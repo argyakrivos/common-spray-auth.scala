@@ -22,19 +22,19 @@ class OptionalAuthTokenDirectiveTests extends FunSuite with ScalatestRouteTest {
 
   test("Extracts token from supported Authorization header") {
     Get("/").withHeaders(Authorization(OAuth2BearerToken("token"))) ~> route ~> check {
-      assert(responseAs[String] === "token")
+      assert(responseAs[String] == "token")
     }
   }
 
   test("Extracts None when there is no Authorization header") {
     Get("/") ~> route ~> check {
-      assert(responseAs[String] === "")
+      assert(responseAs[String] == "")
     }
   }
 
   test("Rejects unsupported Authorization header") {
     Get("/").withHeaders(Authorization(GenericHttpCredentials("god", "Argy"))) ~> route ~> check {
-      assert(rejection === AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
+      assert(rejection == AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
     }
   }
 }
