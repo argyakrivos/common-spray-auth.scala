@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.4.0 ([#10](https://git.mobcastdev.com/Platform/common-spray-auth/pull/10) 2014-06-27 11:16:27)
+
+AuthToken directive
+
+### New Feature
+
+- Added `authToken` directive that extracts the auth token from the request
+
 ## 0.3.4 ([#9](https://git.mobcastdev.com/Platform/common-spray-auth/pull/9) 2014-06-12 10:38:20)
 
 Excluded unnecessary dependencies
