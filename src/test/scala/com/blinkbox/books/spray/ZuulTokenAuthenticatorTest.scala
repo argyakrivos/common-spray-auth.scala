@@ -91,4 +91,11 @@ class ZuulTokenAuthenticatorTest extends FunSuite with ScalatestRouteTest with M
       status should be(InternalServerError)
     }
   }
+
+  test("The elevation checker is not called if the desired elevation is Unelevated") {
+    val authenticator = new ZuulTokenAuthenticator(_ => Future(User(123, None)), _ => Future.failed(new Exception("Should not be called"))).withElevation(Unelevated)
+    Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
+      status should be(OK)
+    }
+  }
 }
