@@ -1,5 +1,6 @@
 package com.blinkbox.books.auth
 
+import com.blinkbox.books.auth.UserRole._
 import com.blinkbox.security.jwt._
 import org.scalatest.{FunSuite, Matchers}
 import org.scalatest.concurrent.{AsyncAssertions, ScalaFutures}
@@ -16,14 +17,31 @@ class ZuulTokenDeserializerTest extends FunSuite with ScalaFutures with AsyncAss
   test("A token with a valid subject claim is deserialized") {
     val token = testToken("sub" -> "urn:blinkbox:zuul:user:123")
     whenReady(deserializer(token)) { user =>
-      user should be(User(123, None))
+      assert(user.id == 123)
     }
   }
 
   test("A token with valid subject and client claims is deserialized") {
     val token = testToken("sub" -> "urn:blinkbox:zuul:user:284", "bb/cid" -> "urn:blinkbox:zuul:client:2934")
     whenReady(deserializer(token)) { user =>
-      user should be(User(284, Some(2934)))
+      assert(user.id == 284)
+      assert(user.clientId == Some(2934))
+    }
+  }
+
+  test("A token with roles is deserialized") {
+    val token = testToken("sub" -> "urn:blinkbox:zuul:user:123", "bb/rol" -> Array("emp", "mkt"))
+    whenReady(deserializer(token)) { user =>
+      assert(user.isInRole(Employee))
+      assert(user.isInRole(Marketing))
+    }
+  }
+
+  test("A token with roles that aren't understood is deserialized") {
+    val token = testToken("sub" -> "urn:blinkbox:zuul:user:123", "bb/rol" -> Array("emp", "foo", "bar"))
+    whenReady(deserializer(token)) { user =>
+      assert(user.isInRole(Employee))
+      assert(user.isInRole(NotUnderstood))
     }
   }
 

@@ -1,20 +1,20 @@
 package com.blinkbox.books.spray
 
-import com.blinkbox.books.auth.{User, TokenElevationChecker, TokenDeserializer}
 import com.blinkbox.books.auth.Elevation._
+import com.blinkbox.books.auth.{TokenDeserializer, TokenElevationChecker, User}
 import com.blinkbox.security.jwt.TokenException
-import scala.concurrent.{Future, ExecutionContext}
-import scala.Some
-import spray.http._
 import spray.http.HttpHeaders.{Authorization, `WWW-Authenticate`}
+import spray.http._
+import spray.routing.AuthenticationFailedRejection.{CredentialsMissing, CredentialsRejected}
 import spray.routing.authentication._
-import spray.routing.{Rejection, AuthenticationFailedRejection, RequestContext}
-import spray.routing.AuthenticationFailedRejection.{CredentialsRejected, CredentialsMissing}
+import spray.routing.{AuthenticationFailedRejection, Rejection, RequestContext}
 import spray.util._
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class ZuulTokenAuthenticator(deserializer: TokenDeserializer, elevationChecker: TokenElevationChecker, val elevation: Elevation = Critical)(implicit val executionContext: ExecutionContext)
   extends ContextAuthenticator[User] {
-  import ZuulTokenAuthenticator._
+  import com.blinkbox.books.spray.ZuulTokenAuthenticator._
 
   def withElevation(e: Elevation) = new ZuulTokenAuthenticator(deserializer, elevationChecker, e)
 
@@ -26,9 +26,13 @@ class ZuulTokenAuthenticator(deserializer: TokenDeserializer, elevationChecker: 
 
   private def authenticate(token: String): Future[Either[Rejection, User]] =
     deserializer(token) flatMap { user =>
-      elevationChecker(token) map (_ >= elevation) map {
-        case true => Right(user)
-        case false => Left(AuthenticationFailedRejection(CredentialsRejected, insufficientElevationHeaders))
+      if (elevation == Unelevated) {
+        Future.successful(Right(user))
+      } else {
+        elevationChecker(token) map (_ >= elevation) map {
+          case true => Right(user)
+          case false => Left(AuthenticationFailedRejection(CredentialsRejected, insufficientElevationHeaders))
+        }
       }
     } recover {
       case _: TokenException => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
