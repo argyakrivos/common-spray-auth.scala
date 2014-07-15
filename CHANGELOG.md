@@ -1,5 +1,24 @@
 # Change Log
 
+## 0.5.0 ([#11](https://git.mobcastdev.com/Platform/common-spray-auth/pull/11) 2014-07-14 10:18:42)
+
+Added claims & roles to the User object
+
+### Breaking changes
+
+- The `User` constructor now takes an additional `claims` parameter
+containing the additional claims about the user.
+
+### New features
+
+- You can now access all the claims about a user.
+- The roles claim is parsed into a set of `UserRole` values on demand.
+
+### Bug fixes
+
+- `ZuulTokenAuthenticator` doesn’t check elevation when the desired
+elevation is `Unelevated`.
+
 ## 0.4.0 ([#10](https://git.mobcastdev.com/Platform/common-spray-auth/pull/10) 2014-06-27 11:16:27)
 
 AuthToken directive
