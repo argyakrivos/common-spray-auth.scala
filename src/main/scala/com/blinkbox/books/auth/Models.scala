@@ -67,11 +67,11 @@ object User {
   def apply(claims: java.util.Map[String, AnyRef]): User = User(mapAsScalaMap(claims).toMap)
 
   def apply(claims: Map[String, AnyRef]): User = {
-    val id = claims.get(SubjectClaim) match {
+    val id = claims.get(SubjectClaim).map(_.asInstanceOf[String]) match {
       case Some(UserUrn(n)) => parseIdentifier(n)
       case _ => throw new InvalidClaimException("The user id claim is missing or invalid.")
     }
-    val clientId = claims.get(ClientIdClaim) map {
+    val clientId = claims.get(ClientIdClaim).map(_.asInstanceOf[String]) map {
       case ClientUrn(n) => parseIdentifier(n)
       case _ => throw new InvalidClaimException("The client id claim is invalid.")
     }

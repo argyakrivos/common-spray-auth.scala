@@ -12,12 +12,12 @@ import com.blinkbox.books.spray.ZuulTokenAuthenticator.{credentialsMissingHeader
 
 object AuthDirectives {
 
-  def optionalAuthenticate[T](magnet: AuthMagnet[T]): Directive1[Option[T]] = optionalHeaderValueByType[Authorization]().flatMap {
+  def optionalAuthenticate[T](magnet: AuthMagnet[T]): Directive1[Option[T]] = optionalHeaderValueByType[Authorization](()).flatMap {
     case Some(_) => authenticate(magnet).flatMap(u => provide(Some(u)))
     case None => provide(None)
   }
 
-  val authToken: Directive1[String] = optionalHeaderValueByType[Authorization]().flatMap {
+  val authToken: Directive1[String] = optionalHeaderValueByType[Authorization](()).flatMap {
     case None         => reject(AuthenticationFailedRejection(CredentialsMissing, credentialsMissingHeaders))
     case Some(header) => extractAuthToken(header) match {
       case Right(token)    => provide(token)
@@ -25,7 +25,7 @@ object AuthDirectives {
     }
   }
 
-  val optionalAuthToken: Directive1[Option[String]] = optionalHeaderValueByType[Authorization]().flatMap {
+  val optionalAuthToken: Directive1[Option[String]] = optionalHeaderValueByType[Authorization](()).flatMap {
     case None         => provide(None)
     case Some(header) => extractAuthToken(header) match {
       case Right(token)    => provide(Some(token))
