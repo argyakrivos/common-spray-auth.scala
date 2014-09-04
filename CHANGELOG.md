@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.5.1 ([#12](https://git.mobcastdev.com/Platform/common-spray-auth/pull/12) 2014-09-04 12:52:34)
+
+Cross compiles to Scala 2.11
+
+### Improvements
+
+* Now cross-compiles to Scala 2.11
+
 ## 0.5.0 ([#11](https://git.mobcastdev.com/Platform/common-spray-auth/pull/11) 2014-07-14 10:18:42)
 
 Added claims & roles to the User object
