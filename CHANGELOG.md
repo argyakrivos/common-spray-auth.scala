@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.5.2 ([#13](https://git.mobcastdev.com/Platform/common-spray-auth/pull/13) 2014-09-08 12:57:54)
+
+Update dependencies
+
+Patch to update dependency versions
+
 ## 0.5.1 ([#12](https://git.mobcastdev.com/Platform/common-spray-auth/pull/12) 2014-09-04 12:52:34)
 
 Cross compiles to Scala 2.11
