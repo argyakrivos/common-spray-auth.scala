@@ -17,7 +17,7 @@ import spray.httpx.unmarshalling.Unmarshaller
 
 private case class ZuulSession(tokenElevation: Elevation)
 
-class ZuulElevationChecker(sessionUri: String)(implicit val actorRefFactory: ActorRefFactory) extends TokenElevationChecker with Json4sJacksonSupport {
+class ZuulElevationChecker(sessionUri: String)(implicit val actorRefFactory: ActorRefFactory) extends ElevationChecker with Json4sJacksonSupport {
   implicit val dispatcher = actorRefFactory.dispatcher
   implicit val timeout = Timeout(2.seconds)
   implicit val json4sJacksonFormats = DefaultFormats + new EnumNameSerializer(Elevation)
@@ -33,5 +33,5 @@ class ZuulElevationChecker(sessionUri: String)(implicit val actorRefFactory: Act
       ~> unmarshal[ZuulSession]
     )
 
-  def apply(token: String): Future[Elevation] = pipeline(token)(Get(sessionUri)).map(_.tokenElevation)
+  def apply(user: User): Future[Elevation] = pipeline(user.accessToken)(Get(sessionUri)).map(_.tokenElevation)
 }

@@ -2,6 +2,7 @@ package com.blinkbox.books.auth
 
 import com.blinkbox.security.jwt.InvalidClaimException
 import scala.collection.convert.WrapAsScala._
+import shapeless.Typeable._
 
 object Elevation extends Enumeration {
   type Elevation = Value
@@ -29,9 +30,11 @@ import UserRole._
  *
  * @param id The user identifier.
  * @param clientId The client identifier, if the user is on an authenticated client.
+ * @param accessToken The blinkbox books access token for the user.
  * @param claims Additional claims that have been asserted about the user.
  */
-case class User(id: Int, clientId: Option[Int] = None, claims: Map[String, AnyRef] = Map.empty) {
+case class User(id: Int, clientId: Option[Int], accessToken: String, claims: Map[String, AnyRef] = Map.empty) {
+  import User._
 
   /**
    * The roles that the user is in.
@@ -43,6 +46,12 @@ case class User(id: Int, clientId: Option[Int] = None, claims: Map[String, AnyRe
     case rs: Iterable[_] => rs.map(parseRole).toSet
     case _ => throw new InvalidClaimException("The roles claim is invalid")
   } getOrElse Set()
+
+  /**
+   * The SSO access token for the user. Use this as the access token if you need to call a group
+   * service with authentication on behalf of the current user.
+   */
+  lazy val ssoAccessToken: Option[String] = claims.get(SsoAccessTokenClaim).flatMap(_.cast[String])
 
   /**
    * Checks whether the user is in a specified role.
@@ -63,10 +72,11 @@ object User {
   private val ClientUrn = """urn:blinkbox:zuul:client:([0-9]+)""".r
   private val SubjectClaim = "sub"
   private val ClientIdClaim = "bb/cid"
+  private val SsoAccessTokenClaim = "sso/at"
 
-  def apply(claims: java.util.Map[String, AnyRef]): User = User(mapAsScalaMap(claims).toMap)
+  def apply(accessToken: String, claims: java.util.Map[String, AnyRef]): User = User(accessToken, mapAsScalaMap(claims).toMap)
 
-  def apply(claims: Map[String, AnyRef]): User = {
+  def apply(accessToken: String, claims: Map[String, AnyRef]): User = {
     val id = claims.get(SubjectClaim).map(_.asInstanceOf[String]) match {
       case Some(UserUrn(n)) => parseIdentifier(n)
       case _ => throw new InvalidClaimException("The user id claim is missing or invalid.")
@@ -75,7 +85,7 @@ object User {
       case ClientUrn(n) => parseIdentifier(n)
       case _ => throw new InvalidClaimException("The client id claim is invalid.")
     }
-    User(id, clientId, claims - SubjectClaim - ClientIdClaim)
+    User(id, clientId, accessToken, claims)
   }
 
   private def parseIdentifier(id: String): Int = try {

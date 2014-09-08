@@ -18,7 +18,7 @@ import spray.testkit.ScalatestRouteTest
 
 trait AuthenticatedService extends HttpService {
   implicit val executionContext: ExecutionContext
-  def route(authenticator: ZuulTokenAuthenticator): Route = get {
+  def route(authenticator: BearerTokenAuthenticator): Route = get {
     path("") {
       authenticate(authenticator) { user =>
         complete(OK)
@@ -37,63 +37,63 @@ class ZuulTokenAuthenticatorTest extends FunSuite with ScalatestRouteTest with M
   val insufficientElevationHeaders = `WWW-Authenticate`(HttpChallenge("Bearer", realm = "", params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "You need to re-verify your identity"))) :: Nil
 
   test("Authentication succeeds with valid bearer token and elevation") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future(User(123, None)), _ => Future(Critical))
+    val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future(Critical))
     Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
       status should be(OK)
     }
   }
 
   test("The token is reported as missing if there is no Authorization header") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future(User(123, None)), _ => Future(Critical))
+    val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future(Critical))
     Get("/") ~> route(authenticator) ~> check {
       rejection should be(AuthenticationFailedRejection(CredentialsMissing, credentialsMissingHeaders))
     }
   }
 
   test("The token is reported as missing if there is no bearer token") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future(User(123, None)), _ => Future(Critical))
+    val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future(Critical))
     Get("/") ~> addHeader("Authorization", "Bearer") ~> route(authenticator) ~> check {
       rejection should be(AuthenticationFailedRejection(CredentialsMissing, credentialsMissingHeaders))
     }
   }
 
   test("The token is reported as missing if the wrong scheme is used") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future(User(123, None)), _ => Future(Critical))
+    val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future(Critical))
     Get("/") ~> addHeader("Authorization", "Basic x") ~> route(authenticator) ~> check {
       rejection should be(AuthenticationFailedRejection(CredentialsMissing, credentialsMissingHeaders))
     }
   }
 
   test("The token is reported as invalid if it is invalid") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future.failed(new TokenException), _ => Future(Critical))
+    val authenticator = new BearerTokenAuthenticator(_ => Future.failed(new TokenException), _ => Future(Critical))
     Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
       rejection should be(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
     }
   }
 
   test("The token's identity is reported as unverified if elevation is too low") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future(User(123, None)), _ => Future(Unelevated))
+    val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future(Unelevated))
     Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
       rejection should be(AuthenticationFailedRejection(CredentialsRejected, insufficientElevationHeaders))
     }
   }
 
   test("An internal server error occurs if the server is missing the crypto keys") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future.failed(new InvalidKeyException), _ => Future(Critical))
+    val authenticator = new BearerTokenAuthenticator(_ => Future.failed(new InvalidKeyException), _ => Future(Critical))
     Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
       status should be(InternalServerError)
     }
   }
 
   test("An internal server error occurs if checking the elevation times out") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future(User(123, None)), _ => Future.failed(new RequestTimeoutException(Get("/"), "")))
+    val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future.failed(new RequestTimeoutException(Get("/"), "")))
     Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
       status should be(InternalServerError)
     }
   }
 
   test("The elevation checker is not called if the desired elevation is Unelevated") {
-    val authenticator = new ZuulTokenAuthenticator(_ => Future(User(123, None)), _ => Future.failed(new Exception("Should not be called"))).withElevation(Unelevated)
+    val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future.failed(new Exception("Should not be called"))).withElevation(Unelevated)
     Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
       status should be(OK)
     }

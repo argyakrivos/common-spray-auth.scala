@@ -1,7 +1,7 @@
 package com.blinkbox.books.spray
 
 import com.blinkbox.books.spray.AuthDirectives.authToken
-import com.blinkbox.books.spray.ZuulTokenAuthenticator.{credentialsInvalidHeaders, credentialsMissingHeaders}
+import com.blinkbox.books.spray.BearerTokenAuthenticator.{credentialsInvalidHeaders, credentialsMissingHeaders}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
