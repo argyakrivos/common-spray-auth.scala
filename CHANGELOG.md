@@ -1,5 +1,29 @@
 # Change Log
 
+## 0.6.0 ([#14](https://git.mobcastdev.com/Platform/common-spray-auth/pull/14) 2014-09-08 16:03:21)
+
+Make tokens available on the User object
+
+This version has some breaking changes which were necessary to make it
+possible to obtain access tokens from a user object, which is necessary
+to make checking of elevation in SSO efficient.
+
+### Breaking changes
+
+- The `User` object constructor now has an additional parameter.
+- The `TokenElevationChecker` type has been removed, and a new
+`ElevationChecker` type added in its place which takes a `User` rather
+than a `String`.
+- `ZuulTokenAuthenticator` has been renamed to
+`BearerTokenAuthenticator` as there’s nothing really zuul-specific
+about it.
+
+### New features
+
+- `BearerTokenAuthenticator` implements the new trait `ElevatedContextAuthenticator[T]` which derives from `ContextAuthenticator[T]` making it easier to mock tests that need the `withElevation` method.
+- You can now call `accessToken` or `ssoAccessToken` on the `User`
+object, making it easier to access either of these things from code.
+
 ## 0.5.2 ([#13](https://git.mobcastdev.com/Platform/common-spray-auth/pull/13) 2014-09-08 12:57:54)
 
 Update dependencies
