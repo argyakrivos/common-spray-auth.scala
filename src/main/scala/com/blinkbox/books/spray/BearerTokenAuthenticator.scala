@@ -33,7 +33,7 @@ class BearerTokenAuthenticator(deserializer: TokenDeserializer, elevationChecker
       if (elevation == Unelevated) Future.successful(Right(user))
       else elevationChecker(user) map (_ >= elevation) map {
         case true => Right(user)
-        case false => Left(AuthenticationFailedRejection(CredentialsRejected, insufficientElevationHeaders))
+        case false => Left(AuthenticationFailedRejection(CredentialsRejected, unverifiedIdentityHeaders))
       }
     } recover {
       case _: TokenException => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
@@ -41,15 +41,21 @@ class BearerTokenAuthenticator(deserializer: TokenDeserializer, elevationChecker
 }
 
 object BearerTokenAuthenticator {
-  private[spray] val credentialsMissingHeaders = `WWW-Authenticate`(new BearerHttpChallenge) :: Nil
-  private[spray] val credentialsInvalidHeaders = `WWW-Authenticate`(new BearerHttpChallenge(params = Map("error" -> "invalid_token", "error_description" -> "The access token is invalid"))) :: Nil
-  private[spray] val insufficientElevationHeaders = `WWW-Authenticate`(new BearerHttpChallenge(params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "You need to re-verify your identity"))) :: Nil
+  val credentialsMissingHeaders = `WWW-Authenticate`(BearerHttpChallenge.credentialsMissing) :: Nil
+  val credentialsInvalidHeaders = `WWW-Authenticate`(BearerHttpChallenge.credentialsInvalid) :: Nil
+  val unverifiedIdentityHeaders = `WWW-Authenticate`(BearerHttpChallenge.unverifiedIdentity) :: Nil
 }
 
-private class BearerHttpChallenge(params: Map[String, String] = Map.empty) extends HttpChallenge(scheme = "Bearer", realm = "", params) {
+class BearerHttpChallenge(params: Map[String, String] = Map.empty) extends HttpChallenge(scheme = "Bearer", realm = "", params) {
   override def render[R <: Rendering](r: R): r.type = {
     r ~~ scheme
     if (params.nonEmpty) params.foreach { case (k, v) => r ~~ " " ~~ k ~~ '=' ~~#! v }
     r
   }
+}
+
+object BearerHttpChallenge {
+  val credentialsMissing = new BearerHttpChallenge
+  val credentialsInvalid = new BearerHttpChallenge(params = Map("error" -> "invalid_token", "error_description" -> "The access token is invalid"))
+  val unverifiedIdentity = new BearerHttpChallenge(params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "You need to re-verify your identity"))
 }
