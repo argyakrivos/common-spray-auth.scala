@@ -5,5 +5,5 @@ import scala.concurrent.Future
 
 package object auth {
   type TokenDeserializer = String => Future[User]
-  type TokenElevationChecker = String => Future[Elevation]
+  type ElevationChecker = User => Future[Elevation]
 }

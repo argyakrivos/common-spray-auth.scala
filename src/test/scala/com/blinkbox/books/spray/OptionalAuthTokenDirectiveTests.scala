@@ -11,7 +11,7 @@ import spray.routing.AuthenticationFailedRejection.CredentialsRejected
 import spray.testkit.ScalatestRouteTest
 
 import AuthDirectives.optionalAuthToken
-import com.blinkbox.books.spray.ZuulTokenAuthenticator.credentialsInvalidHeaders
+import com.blinkbox.books.spray.BearerTokenAuthenticator.credentialsInvalidHeaders
 
 @RunWith(classOf[JUnitRunner])
 class OptionalAuthTokenDirectiveTests extends FunSuite with ScalatestRouteTest {

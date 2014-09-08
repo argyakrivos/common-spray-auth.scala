@@ -8,7 +8,7 @@ import spray.routing.AuthenticationFailedRejection.{CredentialsMissing, Credenti
 import spray.routing.Directives.{authenticate, optionalHeaderValueByType, provide, reject}
 import spray.routing.directives.AuthMagnet
 
-import com.blinkbox.books.spray.ZuulTokenAuthenticator.{credentialsMissingHeaders, credentialsInvalidHeaders}
+import com.blinkbox.books.spray.BearerTokenAuthenticator.{credentialsMissingHeaders, credentialsInvalidHeaders}
 
 object AuthDirectives {
 
