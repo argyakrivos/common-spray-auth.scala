@@ -1,6 +1,6 @@
 package com.blinkbox.books.spray
 
-import com.blinkbox.books.auth.{RoleConstraint, User}
+import com.blinkbox.books.auth.{UserConstraint, User}
 import com.blinkbox.books.spray.BearerTokenAuthenticator.{credentialsInvalidHeaders, credentialsMissingHeaders}
 import spray.http.HttpHeaders.Authorization
 import spray.http.OAuth2BearerToken
@@ -37,7 +37,7 @@ object AuthDirectives {
     case _ => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
   }
 
-  def authenticateAndAuthorize(magnet: AuthMagnet[User], constraint: RoleConstraint): Directive1[User] =
+  def authenticateAndAuthorize(magnet: AuthMagnet[User], constraint: UserConstraint): Directive1[User] =
     authenticate(magnet).flatMap { u =>
       authorize(constraint(u)).hflatMap(_ => provide(u))
     }

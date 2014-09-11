@@ -1,7 +1,7 @@
 package com.blinkbox.books.spray
 
 import com.blinkbox.books.auth.UserRole.UserRole
-import com.blinkbox.books.auth.{RoleConstraint, User, UserRole}
+import com.blinkbox.books.auth.{UserConstraint, User}
 import com.blinkbox.books.spray.AuthDirectives._
 import com.typesafe.config.ConfigFactory
 import org.junit.runner.RunWith
@@ -22,11 +22,11 @@ class AuthenticateAndAuthorizeDirectiveTest extends FunSuite with Matchers with 
   val config = ConfigFactory.parseString("John = p4ssw0rd")
   def authenticator(roles: UserRole*) = BasicAuth(realm = "test", config = config, createUser = extractUser(roles: _*) _)
 
-  def createRoute(constraint: RoleConstraint, roles: UserRole*) = authenticateAndAuthorize(authenticator(roles: _*) , constraint) { user =>
+  def createRoute(constraint: UserConstraint, roles: UserRole*) = authenticateAndAuthorize(authenticator(roles: _*) , constraint) { user =>
     complete("OK")
   }
 
-  import com.blinkbox.books.auth.RoleConstraint._
+  import com.blinkbox.books.auth.Constraints._
   import com.blinkbox.books.auth.UserRole._
 
   test("A user with a single role that is the one required by the route should be allowed") {

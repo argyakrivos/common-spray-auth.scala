@@ -24,13 +24,10 @@ object UserRole extends Enumeration {
   val NotUnderstood = Value("???")
 }
 
-sealed trait RoleConstraint {
-  def apply(user: User): Boolean
-}
-object RoleConstraint {
-  def hasRole(role: UserRole) = new RoleConstraint { def apply(user: User) = user.isInRole(role) }
-  def hasAnyRole(roles: UserRole*) = new RoleConstraint { def apply(user: User) = roles.exists(user.isInRole) }
-  def hasEveryRole(roles: UserRole*) = new RoleConstraint { def apply(user: User) = roles.forall(user.isInRole) }
+object Constraints {
+  def hasRole(role: UserRole): UserConstraint = _.isInRole(role)
+  def hasAnyRole(roles: UserRole*): UserConstraint = user => roles.exists(user.isInRole)
+  def hasEveryRole(roles: UserRole*): UserConstraint = user => roles.forall(user.isInRole)
 }
 
 import UserRole._
