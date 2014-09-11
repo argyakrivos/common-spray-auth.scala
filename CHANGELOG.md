@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.7.0 ([#15](https://git.mobcastdev.com/Platform/common-spray-auth/pull/15) 2014-09-11 10:45:35)
+
+Introduce role-checking directive
+
+### New features
+
+* Introduce a `RoleConstraint` class and a `authenticateAndAuthorize` directive to provide role-checking capabilities
+
 ## 0.6.0 ([#14](https://git.mobcastdev.com/Platform/common-spray-auth/pull/14) 2014-09-08 16:03:21)
 
 Make tokens available on the User object
