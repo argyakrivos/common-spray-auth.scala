@@ -22,6 +22,9 @@ project/plugins/project/
 *.sc
 .idea/
 
+# Idea specific
+.idea_modules
+
 # Other
 /bin
 *.properties
