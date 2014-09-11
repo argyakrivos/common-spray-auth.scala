@@ -1,5 +1,6 @@
 package com.blinkbox.books.auth
 
+import com.blinkbox.books.auth.UserRole.UserRole
 import com.blinkbox.security.jwt.InvalidClaimException
 import scala.collection.convert.WrapAsScala._
 import shapeless.Typeable._
@@ -21,6 +22,12 @@ object UserRole extends Enumeration {
   val Merchandising = Value("mer")
   val Marketing = Value("mkt")
   val NotUnderstood = Value("???")
+}
+
+object Constraints {
+  def hasRole(role: UserRole): UserConstraint = _.isInRole(role)
+  def hasAnyRole(roles: UserRole*): UserConstraint = user => roles.exists(user.isInRole)
+  def hasEveryRole(roles: UserRole*): UserConstraint = user => roles.forall(user.isInRole)
 }
 
 import UserRole._

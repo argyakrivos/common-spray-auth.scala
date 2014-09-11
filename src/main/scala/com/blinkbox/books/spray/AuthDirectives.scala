@@ -1,14 +1,13 @@
 package com.blinkbox.books.spray
 
-import scala.language.implicitConversions
+import com.blinkbox.books.auth.{UserConstraint, User}
+import com.blinkbox.books.spray.BearerTokenAuthenticator.{credentialsInvalidHeaders, credentialsMissingHeaders}
 import spray.http.HttpHeaders.Authorization
 import spray.http.OAuth2BearerToken
-import spray.routing._
 import spray.routing.AuthenticationFailedRejection.{CredentialsMissing, CredentialsRejected}
-import spray.routing.Directives.{authenticate, optionalHeaderValueByType, provide, reject}
+import spray.routing.Directives.{authenticate, authorize, optionalHeaderValueByType, provide, reject}
+import spray.routing._
 import spray.routing.directives.AuthMagnet
-
-import com.blinkbox.books.spray.BearerTokenAuthenticator.{credentialsMissingHeaders, credentialsInvalidHeaders}
 
 object AuthDirectives {
 
@@ -37,4 +36,10 @@ object AuthDirectives {
     case Authorization(OAuth2BearerToken(token)) => Right(token)
     case _ => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
   }
+
+  def authenticateAndAuthorize(magnet: AuthMagnet[User], constraint: UserConstraint): Directive1[User] =
+    authenticate(magnet).flatMap { u =>
+      authorize(constraint(u)).hflatMap(_ => provide(u))
+    }
 }
+
