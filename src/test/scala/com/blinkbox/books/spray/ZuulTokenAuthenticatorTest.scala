@@ -71,6 +71,13 @@ class ZuulTokenAuthenticatorTest extends FunSuite with ScalatestRouteTest with M
     }
   }
 
+  test("The token is reported as invalid if the elevation checker finds it invalid") {
+    val authenticator = new BearerTokenAuthenticator(_ => Future.failed(new InvalidTokenStatusException), _ => Future(Critical))
+    Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
+      rejection should be(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
+    }
+  }
+
   test("The token's identity is reported as unverified if elevation is too low") {
     val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future(Unelevated))
     Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {

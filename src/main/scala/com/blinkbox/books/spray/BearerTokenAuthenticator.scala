@@ -12,6 +12,8 @@ import spray.util._
 
 import scala.concurrent.{ExecutionContext, Future}
 
+class InvalidTokenStatusException(message: String = "The provided token has a non-valid status") extends Exception(message)
+
 trait ElevatedContextAuthenticator[T] extends ContextAuthenticator[T] {
   def withElevation(e: Elevation): ElevatedContextAuthenticator[T]
 }
@@ -36,7 +38,7 @@ class BearerTokenAuthenticator(deserializer: TokenDeserializer, elevationChecker
         case false => Left(AuthenticationFailedRejection(CredentialsRejected, unverifiedIdentityHeaders))
       }
     } recover {
-      case _: TokenException => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
+      case _: TokenException | _: InvalidTokenStatusException => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
     }
 }
 
