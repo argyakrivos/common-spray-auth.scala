@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.7.1 ([#17](https://git.mobcastdev.com/Platform/common-spray-auth/pull/17) 2014-10-06 14:05:15)
+
+Introduce an exception to be used when a token has an invalid status
+
+### Improvements
+
+With reference to CP-1926 this patch includes a new exception type to be used by the elevation checker when it wants to signal that a given token has a status that is different from `Valid` on SSO.
+
 ## 0.7.0 ([#15](https://git.mobcastdev.com/Platform/common-spray-auth/pull/15) 2014-09-11 10:45:35)
 
 Introduce role-checking directive
