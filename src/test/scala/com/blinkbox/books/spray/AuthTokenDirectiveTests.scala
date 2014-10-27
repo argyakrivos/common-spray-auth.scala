@@ -33,7 +33,7 @@ class AuthTokenDirectiveTests extends FunSuite with ScalatestRouteTest {
 
   test("Rejects unsupported Authorization header") {
     Get("/") ~> Authorization(GenericHttpCredentials("god", "Argy")) ~> route ~> check {
-      assert(rejection == AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
+      assert(rejection == AuthenticationFailedRejection(CredentialsMissing, credentialsMissingHeaders))
     }
   }
 }

@@ -1,17 +1,16 @@
 package com.blinkbox.books.spray
 
+import com.blinkbox.books.spray.AuthDirectives.optionalAuthToken
+import com.blinkbox.books.spray.BearerTokenAuthenticator.credentialsMissingHeaders
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSuite
-import spray.http.{GenericHttpCredentials, OAuth2BearerToken}
+import org.scalatest.junit.JUnitRunner
 import spray.http.HttpHeaders.Authorization
-import spray.routing.Directives.complete
+import spray.http.{GenericHttpCredentials, OAuth2BearerToken}
 import spray.routing.AuthenticationFailedRejection
-import spray.routing.AuthenticationFailedRejection.CredentialsRejected
+import spray.routing.AuthenticationFailedRejection.CredentialsMissing
+import spray.routing.Directives.complete
 import spray.testkit.ScalatestRouteTest
-
-import AuthDirectives.optionalAuthToken
-import com.blinkbox.books.spray.BearerTokenAuthenticator.credentialsInvalidHeaders
 
 @RunWith(classOf[JUnitRunner])
 class OptionalAuthTokenDirectiveTests extends FunSuite with ScalatestRouteTest {
@@ -34,7 +33,7 @@ class OptionalAuthTokenDirectiveTests extends FunSuite with ScalatestRouteTest {
 
   test("Rejects unsupported Authorization header") {
     Get("/").withHeaders(Authorization(GenericHttpCredentials("god", "Argy"))) ~> route ~> check {
-      assert(rejection == AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
+      assert(rejection == AuthenticationFailedRejection(CredentialsMissing, credentialsMissingHeaders))
     }
   }
 }

@@ -2,7 +2,7 @@ package com.blinkbox.books.spray
 
 import com.blinkbox.books.auth._
 import com.blinkbox.books.auth.Elevation._
-import com.blinkbox.security.jwt.TokenException
+import com.blinkbox.security.jwt.{ExpiredTokenException, TokenException}
 import java.security.InvalidKeyException
 import org.junit.runner.RunWith
 import org.scalatest.{FunSuite, Matchers}
@@ -33,8 +33,9 @@ class ZuulTokenAuthenticatorTest extends FunSuite with ScalatestRouteTest with M
   override implicit val executionContext = actorRefFactory.dispatcher
 
   val credentialsMissingHeaders = `WWW-Authenticate`(HttpChallenge("Bearer", realm = "")) :: Nil
+  val credentialsExpiredHeaders = `WWW-Authenticate`(HttpChallenge("Bearer", realm = "", params = Map("error" -> "invalid_token", "error_description" -> "The access token expired"))) :: Nil
   val credentialsInvalidHeaders = `WWW-Authenticate`(HttpChallenge("Bearer", realm = "", params = Map("error" -> "invalid_token", "error_description" -> "The access token is invalid"))) :: Nil
-  val insufficientElevationHeaders = `WWW-Authenticate`(HttpChallenge("Bearer", realm = "", params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "You need to re-verify your identity"))) :: Nil
+  val insufficientElevationHeaders = `WWW-Authenticate`(HttpChallenge("Bearer", realm = "", params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "User identity must be reverified"))) :: Nil
 
   test("Authentication succeeds with valid bearer token and elevation") {
     val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future(Critical))
@@ -61,6 +62,13 @@ class ZuulTokenAuthenticatorTest extends FunSuite with ScalatestRouteTest with M
     val authenticator = new BearerTokenAuthenticator(_ => Future(User(123, None, "mytoken")), _ => Future(Critical))
     Get("/") ~> addHeader("Authorization", "Basic x") ~> route(authenticator) ~> check {
       rejection should be(AuthenticationFailedRejection(CredentialsMissing, credentialsMissingHeaders))
+    }
+  }
+
+  test("The token is reported as expired if it has expired") {
+    val authenticator = new BearerTokenAuthenticator(_ => Future.failed(new ExpiredTokenException), _ => Future(Critical))
+    Get("/") ~> addHeader("Authorization", "Bearer x") ~> route(authenticator) ~> check {
+      rejection should be(AuthenticationFailedRejection(CredentialsRejected, credentialsExpiredHeaders))
     }
   }
 
