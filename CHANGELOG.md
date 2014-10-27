@@ -1,5 +1,19 @@
 # Change Log
 
+## 0.7.2 ([#18](https://git.mobcastdev.com/Platform/common-spray-auth/pull/18) 2014-10-27 13:40:50)
+
+Ensure messages are the same as 'old' ones
+
+The client teams have taken a dependency on the text of the `error_description` field of the `WWW-Authenticate` rather than using the status codes in the `error` and `error_reason` fields. This means we need to change the behaviour of this library to send the text they are expecting :-/
+
+### “Improvements”
+
+- Uses the same error messages as the services currently in production, including different error messages for expired rather than simply invalid tokens.
+
+### Bug Fixes
+
+- The `authToken` and `optionalAuthToken` directives now return `CredentialsMissing` rather than `CredentialsRejected` when credentials are supplied in a scheme other than `Bearer`.
+
 ## 0.7.1 ([#17](https://git.mobcastdev.com/Platform/common-spray-auth/pull/17) 2014-10-06 14:05:15)
 
 Introduce an exception to be used when a token has an invalid status
