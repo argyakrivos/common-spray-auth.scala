@@ -2,7 +2,7 @@ package com.blinkbox.books.spray
 
 import com.blinkbox.books.auth.Elevation._
 import com.blinkbox.books.auth.{TokenDeserializer, ElevationChecker, User}
-import com.blinkbox.security.jwt.TokenException
+import com.blinkbox.security.jwt.{ExpiredTokenException, TokenException}
 import spray.http.HttpHeaders.{Authorization, `WWW-Authenticate`}
 import spray.http._
 import spray.routing.AuthenticationFailedRejection.{CredentialsMissing, CredentialsRejected}
@@ -38,12 +38,14 @@ class BearerTokenAuthenticator(deserializer: TokenDeserializer, elevationChecker
         case false => Left(AuthenticationFailedRejection(CredentialsRejected, unverifiedIdentityHeaders))
       }
     } recover {
+      case _: ExpiredTokenException => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsExpiredHeaders))
       case _: TokenException | _: InvalidTokenStatusException => Left(AuthenticationFailedRejection(CredentialsRejected, credentialsInvalidHeaders))
     }
 }
 
 object BearerTokenAuthenticator {
   val credentialsMissingHeaders = `WWW-Authenticate`(BearerHttpChallenge.credentialsMissing) :: Nil
+  val credentialsExpiredHeaders = `WWW-Authenticate`(BearerHttpChallenge.credentialsExpired) :: Nil
   val credentialsInvalidHeaders = `WWW-Authenticate`(BearerHttpChallenge.credentialsInvalid) :: Nil
   val unverifiedIdentityHeaders = `WWW-Authenticate`(BearerHttpChallenge.unverifiedIdentity) :: Nil
 }
@@ -58,6 +60,7 @@ class BearerHttpChallenge(params: Map[String, String] = Map.empty) extends HttpC
 
 object BearerHttpChallenge {
   val credentialsMissing = new BearerHttpChallenge
+  val credentialsExpired = new BearerHttpChallenge(params = Map("error" -> "invalid_token", "error_description" -> "The access token expired"))
   val credentialsInvalid = new BearerHttpChallenge(params = Map("error" -> "invalid_token", "error_description" -> "The access token is invalid"))
-  val unverifiedIdentity = new BearerHttpChallenge(params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "You need to re-verify your identity"))
+  val unverifiedIdentity = new BearerHttpChallenge(params = Map("error" -> "invalid_token", "error_reason" -> "unverified_identity", "error_description" -> "User identity must be reverified"))
 }
