@@ -53,7 +53,7 @@ object BearerTokenAuthenticator {
 class BearerHttpChallenge(params: Map[String, String] = Map.empty) extends HttpChallenge(scheme = "Bearer", realm = "", params) {
   override def render[R <: Rendering](r: R): r.type = {
     r ~~ scheme
-    if (params.nonEmpty) params.foreach { case (k, v) => r ~~ " " ~~ k ~~ '=' ~~#! v }
+    if (params.nonEmpty) params.zipWithIndex.foreach { case ((k, v), i) => r ~~ (if (i == 0) "" else ",") ~~ " " ~~ k ~~ '=' ~~#! v }
     r
   }
 }
