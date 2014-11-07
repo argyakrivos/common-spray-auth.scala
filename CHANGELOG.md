@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.7.3 ([#19](https://git.mobcastdev.com/Platform/common-spray-auth/pull/19) 2014-11-07 10:12:54)
+
+Ensure headers render correctly
+
+### Bug Fixes
+
+- The `WWW-Authenticate` header now renders correctly, with commas
+between the parameters.
+
 ## 0.7.2 ([#18](https://git.mobcastdev.com/Platform/common-spray-auth/pull/18) 2014-10-27 13:40:50)
 
 Ensure messages are the same as 'old' ones
