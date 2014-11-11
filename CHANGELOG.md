@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.7.4 ([#20](https://git.mobcastdev.com/Platform/common-spray-auth/pull/20) 2014-11-11 16:29:15)
+
+Elevated sessions are now extended
+
+### Bug Fixes
+
+* When checking elevation, sessions are now extended by using `POST`
+rather than simply checked using `GET`. This means that expiration is
+sliding (as it should be) rather than absolute.
+
 ## 0.7.3 ([#19](https://git.mobcastdev.com/Platform/common-spray-auth/pull/19) 2014-11-07 10:12:54)
 
 Ensure headers render correctly
