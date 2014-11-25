@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.7.5 ([#21](https://git.mobcastdev.com/Platform/common-spray-auth/pull/21) 2014-11-25 13:10:48)
+
+Updated dependencies
+
+### Improvements
+
+- Updated dependencies to latest version
+- Now supports Scala 2.11 only
+
 ## 0.7.4 ([#20](https://git.mobcastdev.com/Platform/common-spray-auth/pull/20) 2014-11-11 16:29:15)
 
 Elevated sessions are now extended
