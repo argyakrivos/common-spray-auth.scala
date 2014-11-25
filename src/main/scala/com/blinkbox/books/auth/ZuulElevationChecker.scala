@@ -3,7 +3,7 @@ package com.blinkbox.books.auth
 import akka.actor.ActorRefFactory
 import akka.util.Timeout
 import com.blinkbox.books.auth.Elevation._
-import org.json4s.DefaultFormats
+import com.blinkbox.books.json.DefaultFormats
 import org.json4s.ext.EnumNameSerializer
 import org.json4s.jackson.JsonMethods._
 import spray.http.HttpHeaders.{Authorization, Accept, `WWW-Authenticate`}
