@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.7.6 ([#22](https://git.mobcastdev.com/Platform/common-spray-auth/pull/22) 2014-11-26 18:01:43)
+
+Bumped versions
+
+### Improvements
+
+- Bumped versions
+
 ## 0.7.5 ([#21](https://git.mobcastdev.com/Platform/common-spray-auth/pull/21) 2014-11-25 13:10:48)
 
 Updated dependencies
