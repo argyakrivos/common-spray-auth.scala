@@ -16,7 +16,7 @@ lazy val root = (project in file(".")).
         "io.spray"            %%  "spray-routing"       % sprayV,
         "io.spray"            %%  "spray-client"        % sprayV,
         "com.typesafe.akka"   %%  "akka-actor"          % akkaV,
-        "com.blinkbox.books"  %%  "common-json"         % "0.2.4",
+        "com.blinkbox.books"  %%  "common-json"         % "0.2.5",
         "com.blinkbox.books"  %%  "common-scala-test"   % "0.3.0"   % Test,
         "io.spray"            %%  "spray-testkit"       % sprayV    % Test,
         "com.typesafe.akka"   %%  "akka-testkit"        % akkaV     % Test,
